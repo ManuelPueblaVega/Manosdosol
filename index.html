@@ -3,262 +3,289 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manos Do y Sol</title>
-    <script src="https://unpkg.com/ml5@latest/dist/ml5.min.js"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <title>Manos Do-Mi-Sol</title>
+    
+    <!-- Librerías p5.js y ml5.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/addons/p5.sound.min.js"></script>
+    <script src="https://unpkg.com/ml5@0.12.2/dist/ml5.min.js"></script>
+    
+    <!-- Estilos CSS -->
     <style>
-        :root {
-            --background-color: #212529;
-            --text-color: #f8f9fa;
-            --primary-color: #0d6efd;
-            --card-background: #343a40;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
 
         body {
-            font-family: 'Roboto', sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: space-between; /* Para empujar el footer hacia abajo */
-            min-height: 100vh;
-            margin: 0;
-            background-color: var(--background-color);
-            color: var(--text-color);
-            text-align: center;
-        }
-
-        main {
+            font-family: 'Montserrat', sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 2rem;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #121212;
+            color: #e0e0e0;
+            text-align: center;
+            overflow: hidden; /* Evita barras de scroll innecesarias */
+        }
+
+        header {
+            margin-bottom: 2rem;
         }
 
         h1 {
             font-size: 2.5rem;
+            color: #ffffff;
             font-weight: 700;
-            margin-bottom: 0.5rem;
+            margin: 0;
         }
 
-        .subtitle {
+        h2 {
             font-size: 1.2rem;
-            font-weight: 300;
-            margin-bottom: 2rem;
-            color: #adb5bd;
-        }
-
-        #video-container {
-            position: relative;
-            border-radius: 1rem;
-            overflow: hidden;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-            background-color: var(--card-background);
-            width: 640px;
-            height: 480px;
-        }
-
-        video {
-            display: block; /* Elimina espacio extra debajo del video */
-            transform: scaleX(-1); /* Espejo para que se sienta natural */
-        }
-        
-        #status-display {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            padding: 1rem;
-            box-sizing: border-box;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.7), transparent);
-        }
-
-        #output, #note-output {
-            background-color: rgba(0, 0, 0, 0.6);
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-            font-size: 1rem;
+            color: #bb86fc; /* Un morado vibrante */
             font-weight: 400;
+            margin: 0.5rem 0 0 0;
+        }
+
+        #canvas-container {
+            position: relative;
+            width: 640px;
+            max-width: 95vw; /* Asegura que se ajuste en pantallas pequeñas */
+            height: 480px;
+            max-height: 70vh;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            background-color: #000;
         }
         
-        #start-button {
-            margin-top: 1.5rem;
-            padding: 1rem 2rem;
-            font-size: 1.2rem;
+        #canvas-container canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        #status-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.5rem;
             font-weight: 700;
-            color: var(--text-color);
-            background-color: var(--primary-color);
-            border: none;
-            border-radius: 0.5rem;
-            cursor: pointer;
-            transition: background-color 0.2s, transform 0.2s;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            z-index: 10;
+            transition: opacity 0.5s ease-out;
         }
         
-        #start-button:hover {
-            background-color: #0b5ed7;
-            transform: translateY(-2px);
-        }
-        
-        #start-button:disabled {
-            background-color: #6c757d;
-            cursor: not-allowed;
+        #hand-status {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ffffff;
+            background-color: rgba(187, 134, 252, 0.85);
+            padding: 0.5rem 1.5rem;
+            border-radius: 25px;
+            transition: background-color 0.3s ease;
         }
 
         footer {
+            position: absolute;
+            bottom: 15px; /* Ajustado para más espacio */
             width: 100%;
-            padding: 1rem;
+            text-align: center;
+            color: #bb86fc; /* Cambiado a color morado */
             font-size: 0.9rem;
-            color: #6c757d;
-            background-color: #1a1e21;
         }
     </style>
 </head>
+
 <body>
-    <main>
-        <h1>Manos Do y Sol</h1>
-        <p class="subtitle">Creado por Manuel Puebla Vega</p>
+    <header>
+        <h1>Manos Do-Mi-Sol</h1>
+        <h2>Creado por Manuel Puebla Vega</h2>
+    </header>
 
-        <div id="video-container">
-            <video id="video" width="640" height="480" autoplay muted playsinline></video>
-            <div id="status-display">
-                <div id="output">Esperando...</div>
-                <div id="note-output">Nota: Silencio</div>
-            </div>
-        </div>
-        
-        <button id="start-button">Iniciar Detección</button>
-    </main>
-
+    <div id="canvas-container">
+        <div id="status-text">Cargando modelo y cámara...</div>
+        <div id="hand-status">Esperando mano...</div>
+    </div>
+    
     <footer>
-        Todos los derechos reservados. Brotes Musicales ® 2025
+        <p>Todos los derechos reservados. Brotes Musicales ® 2025</p>
     </footer>
 
     <script>
-        // --- Referencias a elementos del DOM ---
-        const video = document.getElementById('video');
-        const output = document.getElementById('output');
-        const noteOutput = document.getElementById('note-output');
-        const startButton = document.getElementById('start-button');
-
-        // --- Variables Globales ---
         let handpose;
-        let audioContext;
-        let oscillator;
-        let gainNode; // Para controlar el volumen y evitar clics
-        let handClosed = false;
-        let lastState = false;
+        let video;
+        let predictions = [];
+        let modelReady = false;
 
-        // --- Frecuencias de las notas ---
-        const NOTE_C4 = 261.63; // Do
-        const NOTE_G4 = 392.00; // Sol
+        let statusTextDiv, handStatusDiv;
 
-        // --- Lógica Principal ---
+        // --- Lógica de Audio ---
+        let oscDo, oscSol, oscMi; // Añadido oscilador para Mi
+        let lastState = null; // 'open', 'closed', 'peace', null
+        const NOTE_DO = 261.63; // C4
+        const NOTE_SOL = 392.00; // G4
+        const NOTE_MI = 329.63; // E4 - Nueva nota
 
-        // Inicia la aplicación al hacer clic en el botón
-        startButton.addEventListener('click', async () => {
-            startButton.textContent = 'Cargando modelo...';
-            startButton.disabled = true;
+        function setup() {
+            const canvasContainer = document.getElementById('canvas-container');
+            const canvas = createCanvas(640, 480);
+            canvas.parent('canvas-container');
 
-            await setupCamera();
-            initAudio();
+            video = createCapture(VIDEO);
+            video.size(width, height);
+            video.hide();
+
+            statusTextDiv = select('#status-text');
+            handStatusDiv = select('#hand-status');
+
+            handpose = ml5.handpose(video, () => {
+                modelReady = true;
+                statusTextDiv.html('¡Listo! Muestra tu mano.');
+                setTimeout(() => {
+                    statusTextDiv.style('opacity', '0');
+                    statusTextDiv.style('z-index', '-1');
+                }, 2000);
+            });
+
+            handpose.on('predict', results => {
+                predictions = results;
+            });
+
+            setupAudio();
+        }
+
+        function setupAudio() {
+            userStartAudio();
+
+            oscDo = new p5.Oscillator('sine');
+            oscDo.freq(NOTE_DO);
+            oscDo.amp(0);
+            oscDo.start();
             
-            // Inicializa ml5.handpose
-            handpose = ml5.handpose(video, modelReady);
-            
-            // Escucha los eventos de 'predict'
-            handpose.on('predict', gotHands);
-        });
+            oscSol = new p5.Oscillator('sine');
+            oscSol.freq(NOTE_SOL);
+            oscSol.amp(0);
+            oscSol.start();
 
-        // Configura la cámara del usuario
-        async function setupCamera() {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-                video.srcObject = stream;
-                await new Promise(resolve => video.onloadedmetadata = resolve);
-            } catch (error) {
-                console.error("Error al acceder a la cámara:", error);
-                startButton.textContent = "Error de Cámara";
+            // Configurar el nuevo oscilador para Mi
+            oscMi = new p5.Oscillator('sine');
+            oscMi.freq(NOTE_MI);
+            oscMi.amp(0);
+            oscMi.start();
+        }
+        
+        function draw() {
+            translate(width, 0);
+            scale(-1, 1);
+            image(video, 0, 0, width, height);
+            
+            translate(width, 0);
+            scale(-1, 1);
+
+            if (modelReady) {
+                drawKeypoints();
+                analyzeHand();
             }
         }
         
-        // Inicializa el Web Audio API de forma segura
-        function initAudio() {
-            if (!audioContext) {
-                audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                oscillator = audioContext.createOscillator();
-                gainNode = audioContext.createGain();
+        function analyzeHand() {
+            let currentStatusText = "Esperando mano...";
+            let currentState = null;
 
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
+            if (predictions.length > 0) {
+                const hand = predictions[0];
+                const landmarks = hand.landmarks;
                 
-                // Inicia el oscilador pero con volumen 0
-                gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-                oscillator.start();
-            }
-        }
+                const wrist = landmarks[0];
+                
+                const fingerTips = [landmarks[8], landmarks[12], landmarks[16], landmarks[20]];
+                const fingerMids = [landmarks[6], landmarks[10], landmarks[14], landmarks[18]];
+                
+                // Array para saber si cada dedo está abierto o cerrado
+                let fingersOpen = [false, false, false, false];
+                let closedFingersCount = 0;
 
-        // Se ejecuta cuando el modelo está listo
-        function modelReady() {
-            console.log("¡Modelo de Handpose cargado!");
-            startButton.style.display = 'none'; // Oculta el botón
-        }
+                for (let i = 0; i < fingerTips.length; i++) {
+                    const tip = fingerTips[i];
+                    const mid = fingerMids[i];
+                    
+                    const distTipToWrist = dist(tip[0], tip[1], wrist[0], wrist[1]);
+                    const distMidToWrist = dist(mid[0], mid[1], wrist[0], wrist[1]);
 
-        // Se ejecuta cada vez que se detectan manos
-        function gotHands(results) {
-            if (results.length > 0) {
-                checkHandState(results[0]);
-            } else {
-                output.textContent = 'No se detecta mano';
-                stopNote();
-            }
-        }
-        
-        // Comprueba si la mano está abierta o cerrada
-        function checkHandState(hand) {
-            // Puntos de referencia: 4 (punta del pulgar), 8 (punta del índice)
-            const thumbTip = hand.landmarks[4];
-            const indexTip = hand.landmarks[8];
-            
-            // Calcula la distancia euclidiana entre los dos puntos
-            const distance = Math.hypot(thumbTip[0] - indexTip[0], thumbTip[1] - indexTip[1]);
-            
-            // Umbral para considerar la mano cerrada (ajustar si es necesario)
-            const threshold = 60; 
-            handClosed = distance < threshold;
-            
-            // Actualiza la nota solo si el estado ha cambiado para evitar repeticiones
-            if (handClosed !== lastState) {
-                if (handClosed) {
-                    output.textContent = 'Mano cerrada';
-                    playNote(NOTE_C4, 'Do');
-                } else {
-                    output.textContent = 'Mano abierta';
-                    playNote(NOTE_G4, 'Sol');
+                    if (distTipToWrist > distMidToWrist) {
+                        fingersOpen[i] = true;
+                    } else {
+                        closedFingersCount++;
+                    }
                 }
-                lastState = handClosed;
+
+                // *** LÓGICA DE DETECCIÓN DE GESTOS ***
+                // 1. Prioridad: Detectar gesto de "paz" (índice y corazón abiertos, resto cerrados)
+                if (fingersOpen[0] && fingersOpen[1] && !fingersOpen[2] && !fingersOpen[3]) {
+                    currentState = 'peace';
+                    currentStatusText = 'Gesto de Paz: MI';
+                } 
+                // 2. Si no es paz, detectar mano cerrada
+                else if (closedFingersCount >= 3) {
+                    currentState = 'closed';
+                    currentStatusText = 'Mano Cerrada: DO';
+                } 
+                // 3. Si no, es mano abierta
+                else {
+                    currentState = 'open';
+                    currentStatusText = 'Mano Abierta: SOL';
+                }
+
+            } else {
+                currentState = null;
+                if (lastState !== null) {
+                    updateSound(null);
+                }
+            }
+            
+            if (currentState !== lastState) {
+                updateSound(currentState);
+                lastState = currentState;
+            }
+            
+            handStatusDiv.html(currentStatusText);
+        }
+        
+        function updateSound(state) {
+            const rampTime = 0.1; 
+
+            // Apagar todos los osciladores antes de encender el correcto
+            oscDo.amp(0, rampTime);
+            oscSol.amp(0, rampTime);
+            oscMi.amp(0, rampTime);
+
+            if (state === 'closed') {
+                oscDo.amp(0.5, rampTime);
+            } else if (state === 'open') {
+                oscSol.amp(0.5, rampTime);
+            } else if (state === 'peace') {
+                oscMi.amp(0.5, rampTime);
             }
         }
 
-        // Reproduce una nota con una transición suave
-        function playNote(frequency, noteName) {
-            if (!audioContext) return;
-            oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
-            gainNode.gain.linearRampToValueAtTime(0.5, audioContext.currentTime + 0.05); // Volumen a la mitad
-            noteOutput.textContent = `Nota: ${noteName}`;
+        function drawKeypoints() {
+            for (let i = 0; i < predictions.length; i++) {
+                const prediction = predictions[i];
+                for (let j = 0; j < prediction.landmarks.length; j++) {
+                    const keypoint = prediction.landmarks[j];
+                    fill(187, 134, 252, 200);
+                    noStroke();
+                    ellipse(keypoint[0], keypoint[1], 10, 10);
+                }
+            }
         }
-        
-        // Detiene la nota con una transición suave
-        function stopNote() {
-            if (!audioContext) return;
-            gainNode.gain.linearRampToValueAtTime(0, audioContext.currentTime + 0.1);
-            noteOutput.textContent = 'Nota: Silencio';
-            lastState = null; // Resetea el estado para que suene al volver a detectar
-        }
-
     </script>
 </body>
 </html>
